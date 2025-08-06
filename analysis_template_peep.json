@@ -1,0 +1,267 @@
+{
+    "intervals": [
+        {
+            "name": "PEEP_2",
+            "title": "PEEP 2",
+            "detector": "low_pass"
+        },
+        {
+            "name": "PEEP_4",
+            "title": "PEEP 4",
+            "detector": "low_pass"
+        },
+        {
+            "name": "PEEP_6",
+            "title": "PEEP 6",
+            "detector": "low_pass"
+        },
+        {
+            "name": "PEEP_8",
+            "title": "PEEP 8",
+            "detector": "low_pass"
+        },
+        {
+            "name": "PEEP_10",
+            "title": "PEEP 10",
+            "detector": "low_pass"
+        },
+        {
+            "name": "PEEP_12",
+            "title": "PEEP 12",
+            "detector": "low_pass"
+        },
+        {
+            "name": "PEEP_14",
+            "title": "PEEP 14",
+            "detector": "low_pass"
+        },
+        {
+            "name": "PEEP_16",
+            "title": "PEEP 16",
+            "detector": "low_pass"
+        },
+        {
+            "name": "PEEP_18",
+            "title": "PEEP 18",
+            "detector": "low_pass"
+        },
+        {
+            "name": "PEEP_20",
+            "title": "PEEP 20",
+            "detector": "low_pass"
+        },
+        {
+            "name": "PEEP_22",
+            "title": "PEEP 22",
+            "detector": "low_pass"
+        },
+        {
+            "name": "PEEP_24",
+            "title": "PEEP 24",
+            "detector": "low_pass"
+        }
+    ],
+    "analysis_items": [
+        {
+            "name": "mean_tidal_image_PEEP_2",
+            "prerequisites": [
+                {
+                    "base_item": "tidal_image",
+                    "interval": "PEEP_2"
+                }
+            ],
+            "operations": [ { "name": "mean_over_time" } ],
+            "export": true
+        },
+        {
+            "name": "mean_tidal_image_PEEP_4",
+            "prerequisites": [
+                {
+                    "base_item": "tidal_image",
+                    "interval": "PEEP_4"
+                }
+            ],
+            "operations": [ { "name": "mean_over_time" } ],
+            "export": true
+        },
+        {
+            "name": "mean_tidal_image_PEEP_6",
+            "prerequisites": [
+                {
+                    "base_item": "tidal_image",
+                    "interval": "PEEP_6"
+                }
+            ],
+            "operations": [ { "name": "mean_over_time" } ],
+            "export": true
+        },
+        {
+            "name": "mean_tidal_image_PEEP_8",
+            "prerequisites": [
+                {
+                    "base_item": "tidal_image",
+                    "interval": "PEEP_8"
+                }
+            ],
+            "operations": [ { "name": "mean_over_time" } ],
+            "export": true
+        },
+        {
+            "name": "mean_tidal_image_PEEP_10",
+            "prerequisites": [
+                {
+                    "base_item": "tidal_image",
+                    "interval": "PEEP_10"
+                }
+            ],
+            "operations": [ { "name": "mean_over_time" } ],
+            "export": true
+        },
+        {
+            "name": "mean_tidal_image_PEEP_12",
+            "prerequisites": [
+                {
+                    "base_item": "tidal_image",
+                    "interval": "PEEP_12"
+                }
+            ],
+            "operations": [ { "name": "mean_over_time" } ],
+            "export": true
+        },
+        {
+            "name": "mean_tidal_image_PEEP_14",
+            "prerequisites": [
+                {
+                    "base_item": "tidal_image",
+                    "interval": "PEEP_14"
+                }
+            ],
+            "operations": [ { "name": "mean_over_time" } ],
+            "export": true
+        },
+        {
+            "name": "mean_tidal_image_PEEP_16",
+            "prerequisites": [
+                {
+                    "base_item": "tidal_image",
+                    "interval": "PEEP_16"
+                }
+            ],
+            "operations": [ { "name": "mean_over_time" } ],
+            "export": true
+        },
+        {
+            "name": "mean_tidal_image_PEEP_18",
+            "prerequisites": [
+                {
+                    "base_item": "tidal_image",
+                    "interval": "PEEP_18"
+                }
+            ],
+            "operations": [ { "name": "mean_over_time" } ],
+            "export": true
+        },
+        {
+            "name": "mean_tidal_image_PEEP_20",
+            "prerequisites": [
+                {
+                    "base_item": "tidal_image",
+                    "interval": "PEEP_20"
+                }
+            ],
+            "operations": [ { "name": "mean_over_time" } ],
+            "export": true
+        },
+        {
+            "name": "mean_tidal_image_PEEP_22",
+            "prerequisites": [
+                {
+                    "base_item": "tidal_image",
+                    "interval": "PEEP_22"
+                }
+            ],
+            "operations": [ { "name": "mean_over_time" } ],
+            "export": true
+        },
+        {
+            "name": "mean_tidal_image_PEEP_24",
+            "prerequisites": [
+                {
+                    "base_item": "tidal_image",
+                    "interval": "PEEP_24"
+                }
+            ],
+            "operations": [ { "name": "mean_over_time" } ],
+            "export": true
+        },
+        {
+            "name": "costa_approach_stack",
+            "title": "relative compliance loss stacked",
+            "identifier": "doi: 10.1007/s00134-009-1447-y",
+            "prerequisites": [
+                { "name": "mean_tidal_image_PEEP_2" },
+                { "name": "mean_tidal_image_PEEP_4" },
+                { "name": "mean_tidal_image_PEEP_6" },
+                { "name": "mean_tidal_image_PEEP_8" },
+                { "name": "mean_tidal_image_PEEP_10" },
+                { "name": "mean_tidal_image_PEEP_12" },
+                { "name": "mean_tidal_image_PEEP_14" },
+                { "name": "mean_tidal_image_PEEP_16" },
+                { "name": "mean_tidal_image_PEEP_18" },
+                { "name": "mean_tidal_image_PEEP_20" },
+                { "name": "mean_tidal_image_PEEP_22" },
+                { "name": "mean_tidal_image_PEEP_24" }
+            ],
+            "operations": [
+                {
+                    "name": "stack",
+                    "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+                },
+                {
+                    "name": "costa_approach"
+                }
+            ],
+            "export": false
+        },
+        {
+            "name": "summed_fractional_collapse",
+            "title": "summed relative compliance loss towards lower PEEP (collapse)",
+            "identifier": "doi: 10.1007/s00134-009-1447-y",
+            "prerequisites": [
+                {
+                    "name": "costa_approach_stack"
+                }
+            ],
+            "operations": [
+                {
+                    "name": "slice_last",
+                    "parameters": { "index": 0 }
+                },
+                {
+                    "name": "sum_over_image"
+                }
+            ],
+            "export": true
+        },
+        {
+            "name": "summed_fractional_overdistionsion",
+            "title": "summed relative compliance loss towards higher PEEP (overdistension)",
+            "identifier": "doi: 10.1007/s00134-009-1447-y",
+            "prerequisites": [
+                {
+                    "name": "costa_approach_stack"
+                }
+            ],
+            "operations": [
+                {
+                    "name": "slice_last",
+                    "parameters": { "index": 1 }
+                },
+                {
+                    "name": "sum_over_image"
+                }
+            ],
+            "export": true
+        }
+    ]
+}
