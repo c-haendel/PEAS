@@ -1,4 +1,4 @@
-# PEAS Dokumentation
+# PEAS Documentation
 
 # General/core features
 
@@ -153,7 +153,7 @@ Where the indices mean:
 * samples/breaths: This index describes the result in the time dimension, usually as the number of samples or breaths.
 * vd: This index describes the result in the spatial dimension in the ventral-dorsal direction.
 * rl: This index describes the result in the spatial dimension in the right-left direction.
-* i: This optional index is used to access multiple results of a base item (e.g., expiratory_time_constant).
+* i: This optional index is used to access multiple results of a base item (e.g., `expiratory_time_constant`).
 
 ### Custom Analysis Items
 * name: Arbitrary unique name. Used as the filename during export, so it must not contain special characters except "_".
@@ -171,7 +171,7 @@ Inputs:
 * Numpy array with dimensions (samples, vd0, rl0)
 
 Parameters:
-* vd1, rl1: New dimensions in the ventro-dorsal and right-left directions.
+* `vd1`, `rl1`: New dimensions in the ventro-dorsal and right-left directions.
 
 Outputs:
 * Numpy array with dimensions (samples, vd1, rl1)
@@ -181,8 +181,8 @@ Outputs:
 Apply butterworth bidirectional low pass filter.
 
 Parameters:
-* cutoff: filter cutoff
-* filter_order: filter order
+* `cutoff`: filter cutoff
+* `filter_order`: filter order
 
 ## base items
 
@@ -202,7 +202,7 @@ Difference in impedance between the time t after end-inspiration and end-expirat
 
 Parameters:
 
-* t: Time in seconds after end-inspiration (Default: 1).
+* `t`: Time in seconds after end-inspiration (Default: 1).
 
 Output:
 
@@ -215,8 +215,8 @@ Beforehand, a resampling conversion (cubic spline interpolation) to the sampling
 
 Parameters:
 
-* fraction: Value between 0 and 1.
-* sf: Sampling rate in Hertz (Default: 100).
+* `fraction`: Value between 0 and 1.
+* `sf`: Sampling rate in Hertz (Default: 100).
 
 Output:
 
@@ -229,8 +229,8 @@ Beforehand, a resampling conversion (cubic spline interpolation) to the sampling
 Expiration has negative flow.
 
 Parameters:
-* fraction: Value between 0 and 1.
-* sf: Sampling rate in Hertz (Default: 100).
+* `fraction`: Value between 0 and 1.
+* `sf`: Sampling rate in Hertz (Default: 100).
 
 Output:
 * Numpy array with dimensions (breaths, vd, rl)
@@ -242,7 +242,7 @@ Beforehand, a resampling conversion (cubic spline interpolation) to the sampling
 Expiration has negative flow.
 
 Parameters:
-* sf: Sampling rate in Hertz (Default: 100).
+* `sf`: Sampling rate in Hertz (Default: 100).
 
 Output:
 * Numpy array with dimensions (breaths, vd, rl)
@@ -253,7 +253,7 @@ Time of peak flow between end-inspiration and end-expiration in seconds since th
 Beforehand, a resampling conversion (cubic spline interpolation) to the sampling rate sf takes place.
 
 Parameters:
-* sf: Sampling rate in Hertz (Default: 100).
+* `sf`: Sampling rate in Hertz (Default: 100).
 
 Output:
 * Numpy array with dimensions (breaths, vd, rl)
@@ -264,8 +264,8 @@ Flow in AU/s between two fractions of expiration supplied with list.
 Beforehand, a resampling conversion (cubic spline interpolation) to the sampling rate sf takes place.
 
 Parameters:
-* fraction: List of two values between 0 and 1.
-* sf: Sampling rate in Hertz (Default: 100).
+* `fraction`: List of two values between 0 and 1.
+* `sf`: Sampling rate in Hertz (Default: 100).
 
 Output:
 * Numpy array with dimensions (breaths, vd, rl)
@@ -286,7 +286,7 @@ Measure of regional concavity of expiratory (positive) part of flow-volume-loop:
 Beforehand, a resampling conversion (cubic spline interpolation) to the sampling rate sf takes place.
 
 Parameters:
-* sf: Sampling rate in Hertz (Default: 100).
+* `sf`: Sampling rate in Hertz (Default: 100).
 
 Output:
 * Numpy array with dimensions (breaths, vd, rl)
@@ -296,7 +296,7 @@ Output:
 Pixel-wise expiratory time constant. Data outside valid_range are discarded. An exponential regression is performed with the function 'z0 * np.exp(-t/tau) + c'. All variables are limited to positive values.
 
 Parameters:
-* valid_range: Data range used for regression (part of the expiratory tidal difference data range) (Default: [0.25, 0.75]).
+* `valid_range`: Data range used for regression (part of the expiratory tidal difference data range) (Default: [0.25, 0.75]).
 
 Output:
 * Numpy array with dimensions (breaths, vd, rl, i)
@@ -308,10 +308,10 @@ i: Index of the fit variable, i=0: z0; i=1: tau; i=2: c; i=3: R².
 Pixel-wise regression of any function. Data outside valid_range is discarded.
 
 Parameters:
-* valid_range: Data range used for regression (part of the expiratory tidal difference data range) (Default: [0.25, 0.75]).
-* func_str: String representation of the regression function, e.g., 'z0 * np.exp(-t/tau) + c'
-* variables: Names of the variables in func_str, starting with the dependent variable, e.g., ['t', 'z0', 'tau', 'c']
-* bounds etc: See scipy.optimize.curve_fit, e.g., [0, "inf"]
+* `valid_range`: Data range used for regression (part of the expiratory tidal difference data range) (Default: [0.25, 0.75]).
+* `func_str`: String representation of the regression function, e.g., 'z0 * np.exp(-t/tau) + c'
+* `variables`: Names of the variables in func_str, starting with the dependent variable, e.g., ['t', 'z0', 'tau', 'c']
+* `bounds` etc: See scipy.optimize.curve_fit, e.g., [0, "inf"]
 
 Output:
 * Numpy array with dimensions (breaths, vd, rl, i)
@@ -426,7 +426,7 @@ Input:
 * numpy array
 
 Parameters:
-* axis, ...: see numpy.nansum.
+* `axis`, ...: see numpy.nansum.
 
 Output:
 * numpy array with fewer dimensions
@@ -495,7 +495,7 @@ Input:
 * numpy array with dimensions (t, vd, rl, i)
 
 Parameter:
-* index: index of the result, starting with 0.
+* `index`: index of the result, starting with 0.
 
 Output:
 * numpy array with dimensions (t, vd, rl)
@@ -508,7 +508,7 @@ Input:
 * numpy array with dimensions (t, vd, rl)
 
 Parameter:
-* index: index of desired slice
+* `index`: index of desired slice
 
 Output:
 * numpy array with dimensions (1, vd, rl) or similar
@@ -520,7 +520,7 @@ Input:
 * numpy array
 
 Parameter:
-* axis, ...: see numpy.nanmin, numpy.nanmax.
+* `axis`, ...: see numpy.nanmin, numpy.nanmax.
 
 Output:
 * numpy array with dimensions (0), ...
@@ -560,66 +560,3 @@ Output:
 * numpy array of dimensions (n, 2) (collapse, overdistension)
 
 
-# bugs/todos
-
-- [ ] **unable to set reconstruction reference by clicking**
-- [ ] **resume on non-critical exceptions**
-- [ ] **catch empty intervals, but only if needed**, else ignore
-- [ ] **check if items are cyclic** - dry run option
-- [ ] **test orientation of images of different formats, reconstructed or not**
-- [ ] **stitch multiple input files**
-- [ ] **compare reconstruction to pre-reconstructed files**
-- [ ] when opening files after one another, intervals/flags are not displayed correctly
-- [ ] changing detectors on empty intervals causes errors because detect is triggered
-- [ ] catch "item does not exist"
-- [ ] validate jsons
-- [ ] Exception when first loading reconstructed, then raw
-
-
-# features to come
-
-- [ ] preprocessors
-    - [ ] resample (time)
-    - [ ] average breaths
-    - [ ] diff (convert to flow)
-    - [ ] rotate
-    - [ ] normalize
-    - [ ] filter (over time)
-    - [ ] resample time
-- [ ] base items
-    - [ ] FRIC
-    - [ ] optical flow
-    - [ ] phase delay
-    - [ ] min/max delay
-    - [ ] correlation with sum signal
-    - [ ] point-wise time constants?
-    - [ ] keep dimensions-option for EELI
-    - [ ] all thorax ROI
-    - [ ] all thorax ROI hardcoded
-- [ ] operations
-    - [ ] ApEn (approximate entropy)
-    - [ ] correlation
-    - [ ] flatten dimension
-    - [ ] trim last (e.g. for breath_times)
-    - [ ] custom non-time regressions
-    - [ ] custom non-time fits?
-    - [ ] normalize std 1 mean 0.
-- [ ] detector
-    - [ ] manual flag placement/manipulation, keep flag positions when switching to manual
-    - [ ] restrict detector selection to cyclic/maneuver detectors
-- [ ] data handler
-    - [ ] different reconstruction algorithms, generic representation for GUI
-    - [ ] sentec raw support
-    - [ ] timple reconstructed support
-    - [ ] timple raw support
-- [ ] backend
-    - [ ] calculation multithreading
-- [ ] GUI
-    - [ ] drag-and-drop open
-    - [ ] change plot options black-on-white for screenshots
-    - [ ] **item preview** graph view / item editor
-    - [ ] automatic all-file-interval
-- [ ] exporter
-    - [ ] export pdf report
-    - [ ] export 2d as npy, 2d as graphic
-- [ ] extras: visualization, interpretation, aggregation; FV-loops histograms https://pftforum.com/review/tutorials/spirometry-tutorials/assessing-flow-volume-loops/
