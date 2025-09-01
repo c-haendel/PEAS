@@ -73,6 +73,16 @@ class EITDataHandler():
             except Exception as e:
                 self.error_handler.handle_exception(e)
                 return 0
+        elif filename.suffix == ".npz":
+            try:
+                with np.load(filename) as f:
+                    self.data = f["data"]
+                    sampling_frequency = f["framerate"].item()
+                self.timestamps = np.arange(0, self.data.shape[0])*1./sampling_frequency # these are not real measured timestamps but evenly spaced points in time
+                return sampling_frequency
+            except Exception as e:
+                self.error_handler.handle_exception(e)
+                return 0
         else:
             try:
                 raise RuntimeError(f"Unknown filetype {filename.suffix}")
@@ -81,14 +91,33 @@ class EITDataHandler():
                 return 0
 
     def load_raw_input_file(self, filename, append=False):
-        model = draeger_eit(filename)
-        data_raw = model.load()
-        if append:
-            self.data_raw = np.concatenate((self.data_raw, data_raw))
+        if filename.suffix == ".eit":
+            try:
+                model = draeger_eit(filename)
+                data_raw = model.load()
+                if append:
+                    self.data_raw = np.concatenate((self.data_raw, data_raw))
+                else:
+                    self.data_raw = data_raw
+                self.timestamps = np.arange(0, self.data_raw.shape[0])*1./model.info['framerate'] # these are not real measured timestamps but evenly spaced points in time
+                return model.info['framerate']
+            except Exception as e:
+                self.error_handler.handle_exception(e)
+                return 0
+        elif filename.suffix == ".npz":
+            try:
+                with np.load(filename) as f:
+                    self.data_raw = f["data"]
+                    return f["framerate"].item()
+            except Exception as e:
+                self.error_handler.handle_exception(e)
+                return 0
         else:
-            self.data_raw = data_raw        
-        self.timestamps = np.arange(0, self.data_raw.shape[0])*1./model.info['framerate'] # these are not real measured timestamps but evenly spaced points in time
-        return model.info['framerate']
+            try:
+                raise RuntimeError(f"Unknown filetype {filename.suffix}")
+            except Exception as e:
+                self.error_handler.handle_exception(e)
+                return 0
 
     def reconstruct(self, **kwargs):
         """ Wrapper for reconstruct_multi_frame. Reconstruct all images from raw data within the datahandler.

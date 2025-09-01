@@ -32,7 +32,7 @@ class SettingsHandler():
         # build base parameter
         self.parameter_base_dict = [
             {'name': 'input', 'title': 'input', 'type': 'group', 'children': [
-                {'name': 'raw_filename', 'title': 'filename raw', 'type': 'file', 'nameFilter': 'Draeger EIT (*.eit)'},
+                {'name': 'raw_filename', 'title': 'filename raw', 'type': 'file', 'nameFilter': 'Draeger EIT (*.eit);;numpy (*.npz)'},
                 {'name': 'reconstruction', 'title': 'reconstruction', 'type': 'group', 'children': [
                     {'name': 'reconstruction_algorithm', 'title': 'reconstruction algorithm', 'type': 'list', 'limits': ['GREIT'], 'expanded': False, 'children': [
                         {'name': 'reconstruction_reference', 'title': 'reconstruction reference', 'type': 'float', 'value': 0, 'suffix': 's'},
@@ -41,7 +41,7 @@ class SettingsHandler():
                     ]},
                     {'name': 'reconstruct', 'title': 'reconstruct', 'type': 'action'}
                 ]},
-                {'name': 'reconstructed_filename', 'title': 'filename reconstructed', 'type': 'file', 'nameFilter': 'Draeger binary (*.bin);;Sentec zri (*.zri)'},
+                {'name': 'reconstructed_filename', 'title': 'filename reconstructed', 'type': 'file', 'nameFilter': 'Draeger binary (*.bin);;Sentec zri (*.zri);;numpy (*.npz)'},
                 {'name': 'source_frequency', 'title': 'sampling frequency', 'type': 'float', 'suffix': 'Hz'},
                 {'name': 'analysis', 'title': 'analysis', 'type': 'group', 'children': [
                     {'name': 'analysis_template', 'title': 'analysis template', 'type': 'file', 'nameFilter': 'analysis template (*.json)', 'value': GlobalSettings.ANALYSIS_ITEMS_FILE},
