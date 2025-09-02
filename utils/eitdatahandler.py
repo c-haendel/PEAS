@@ -108,6 +108,7 @@ class EITDataHandler():
             try:
                 with np.load(filename) as f:
                     self.data_raw = f["data"]
+                    self.timestamps = np.arange(0, self.data_raw.shape[0])*1./f['framerate'] # these are not real measured timestamps but evenly spaced points in time
                     return f["framerate"].item()
             except Exception as e:
                 self.error_handler.handle_exception(e)
