@@ -64,3 +64,80 @@ def load_zri(filepath):
         return(np.array(images_list)[:,:,:], timestamps_list, failing_list, valid_list)
     except(FileNotFoundError):
         raise RuntimeError(f"File {filepath} not found, returning empty ImageData Object.")
+
+
+def load_eit(filepath):
+    dt0 = datetime.datetime.strptime("01/01/0001", "%m/%d/%Y")
+    dt_from_ms = lambda ms: dt0 + datetime.timedelta(milliseconds=int(ms))
+
+    def r(f, fmt):
+        return struct.unpack(fmt, f.read(struct.calcsize(fmt)))[0]
+
+    def rvec_i32(f, n):
+        return np.frombuffer(f.read(4*n), dtype="<i4", count=n)
+
+    try:
+        with open(filepath, "rb") as f:
+            fmtver = r(f, "<i")
+            if fmtver not in (4, 5):
+                raise RuntimeError(f"Unsupported SenTec/Swisstom .eit format_version={fmtver}")
+            hdrsz = r(f, "<i")
+            f.seek(16, 1)
+            f.seek(hdrsz, 0)
+
+            # Landquart LQ4/LQ5 constants (EIDORS reader)
+            EOFF, IQN, VIN, POSN = 328, 2048, 64, 3
+            amp = 2.048 / (2**20 * 360 * 1000)  # "simple guess" scaling as implemented in EIDORS
+
+            iq_cols, vi_cols, pos_cols, tabs, trel, evts = [], [], [], [], [], []
+
+            while True:
+                b = f.read(EOFF)
+                if len(b) < EOFF:
+                    break
+                f.seek(-EOFF, 1)
+
+                tAbs_ms = r(f, "<q")
+                ft = r(f, "<i")
+                pl = r(f, "<i")
+
+                if ft == 1:
+                    ev = {"timestamp_ms": tAbs_ms}
+                    if pl >= 4:
+                        ev["eventId"] = r(f, "<i")
+                        pl -= 4
+                    evts.append(ev)
+                    if pl > 0:
+                        f.seek(pl, 1)
+                    continue
+
+                if ft != 0:
+                    if pl > 0:
+                        f.seek(pl, 1)
+                    continue
+
+                _hdr = rvec_i32(f, 15)
+                trel.append(int(_hdr[4]))
+                pos_cols.append(rvec_i32(f, POSN))
+                vi_cols.append(rvec_i32(f, VIN))
+                iq_cols.append(rvec_i32(f, IQN))
+                tabs.append(dt_from_ms(tAbs_ms))
+
+                skip = pl - (4*IQN + EOFF)
+                if skip > 0:
+                    f.seek(skip, 1)
+
+            if not iq_cols:
+                raise RuntimeError(f"File {filepath} has insufficient data points.")
+
+            iq = np.stack(iq_cols, axis=1)
+            vi = np.stack(vi_cols, axis=1)
+            pos = np.stack(pos_cols, axis=1) if pos_cols else np.zeros((POSN, iq.shape[1]), dtype=np.int32)
+
+            vv = amp * (iq[0::2].astype(np.float64) + 1j * iq[1::2].astype(np.float64))
+            elecImps = vi[0::2].astype(np.float64) + 1j * vi[1::2].astype(np.float64)
+
+            return vv, tabs, trel, elecImps, pos, evts, {"format_version": fmtver, "header_size": hdrsz}
+
+    except FileNotFoundError:
+        raise RuntimeError(f"File {filepath} not found, returning empty EITData Object.")

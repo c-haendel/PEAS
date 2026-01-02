@@ -15,10 +15,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # for data manipulation
+import math
 import numpy as np
 # for file handling
 from draeger import load_bin
-from sentec import load_zri
+from sentec import load_zri, load_eit
 #for reconstruction
 import pyeit.mesh as mesh
 import pyeit.eit.protocol as protocol
@@ -101,9 +102,19 @@ class EITDataHandler():
                     self.data_raw = data_raw
                 self.timestamps = np.arange(0, self.data_raw.shape[0])*1./model.info['framerate'] # these are not real measured timestamps but evenly spaced points in time
                 return model.info['framerate']
-            except Exception as e:
-                self.error_handler.handle_exception(e)
-                return 0
+            except:
+                try:
+                    data_raw, timestamps, _, _ = load_eit(filename)
+                    sampling_frequency = len(data_raw) / (timestamps[-1] - timestamps[0]).total_seconds()
+                    if append:
+                        self.data_raw = np.concatenate((self.data_raw, data_raw))
+                    else:
+                        self.data_raw = data_raw
+                    self.timestamps = np.arange(0, self.data.shape[0])*1./sampling_frequency # these are not real measured timestamps but evenly spaced points in time
+                    return sampling_frequency
+                except Exception as e:
+                    self.error_handler.handle_exception(e)
+                    return 0
         elif filename.suffix == ".npz":
             try:
                 with np.load(filename) as f:
@@ -147,9 +158,9 @@ class EITDataHandler():
         """
         base_conductivity = 1 # hardcoded
         # setup mesh (with thorax shape), protocol
-        n_el = 16
+        n_el = 1 + math.sqrt(1 + vx[1])
         mesh_obj = mesh.create(n_el, h0=0.1, fd=thorax)
-        protocol_obj = protocol.create(n_el, dist_exc=1, step_meas=1, parser_meas="std")
+        protocol_obj = protocol.create(n_el, dist_exc=1, step_meas=1, parser_meas="std") # TODO: verify settings for sentec *.eit
         # setup solver
         if reconstruction_algorithm == "GREIT":
             v0 = vx[kwargs.get('reference_index', 0)]
