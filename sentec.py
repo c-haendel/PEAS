@@ -1,3 +1,7 @@
+from __future__ import annotations
+from dataclasses import dataclass
+from typing import Optional, Tuple
+
 import datetime
 import struct
 import numpy as np
@@ -80,16 +84,23 @@ def load_eit(filepath):
         with open(filepath, "rb") as f:
             fmtver = r(f, "<i")
             if fmtver not in (4, 5):
-                raise RuntimeError(f"Unsupported SenTec/Swisstom .eit format_version={fmtver}")
+                raise RuntimeError(f"Unsupported .eit format version {fmtver}")
+
             hdrsz = r(f, "<i")
             f.seek(16, 1)
+            _ = r(f, "<i")  # nFrames (unused)
             f.seek(hdrsz, 0)
 
-            # Landquart LQ4/LQ5 constants (EIDORS reader)
-            EOFF, IQN, VIN, POSN = 328, 2048, 64, 3
-            amp = 2.048 / (2**20 * 360 * 1000)  # "simple guess" scaling as implemented in EIDORS
+            EOFF, IQN = 328, 2048
+            amp = 2.048 / (2**20 * 360 * 1000)  # EIDORS scaling
+            n_el = 32
 
-            iq_cols, vi_cols, pos_cols, tabs, trel, evts = [], [], [], [], [], []
+            keep = np.ones(n_el, dtype=bool)
+            keep[[27, 0, 5]] = False
+
+            frames = []
+            t_abs = []
+            t_rel_us = []
 
             while True:
                 b = f.read(EOFF)
@@ -101,43 +112,41 @@ def load_eit(filepath):
                 ft = r(f, "<i")
                 pl = r(f, "<i")
 
-                if ft == 1:
-                    ev = {"timestamp_ms": tAbs_ms}
-                    if pl >= 4:
-                        ev["eventId"] = r(f, "<i")
-                        pl -= 4
-                    evts.append(ev)
-                    if pl > 0:
-                        f.seek(pl, 1)
-                    continue
-
                 if ft != 0:
                     if pl > 0:
                         f.seek(pl, 1)
                     continue
 
-                _hdr = rvec_i32(f, 15)
-                trel.append(int(_hdr[4]))
-                pos_cols.append(rvec_i32(f, POSN))
-                vi_cols.append(rvec_i32(f, VIN))
-                iq_cols.append(rvec_i32(f, IQN))
-                tabs.append(dt_from_ms(tAbs_ms))
+                hdr = rvec_i32(f, 15)
+                t_rel_us.append(int(hdr[4]))
+
+                f.seek(4*(3 + 64), 1)  # patient pos + electrode impedances
+
+                iq = rvec_i32(f, IQN)
+                vv_c = amp * (iq[0::2].astype(np.float64) + 1j*iq[1::2].astype(np.float64))
+                if vv_c.size != n_el*n_el:
+                    raise RuntimeError(f"Expected {n_el*n_el} values, got {vv_c.size}")
+
+                M = np.abs(vv_c.reshape(n_el, n_el))  # (stim, meas)
+
+                for s in range(n_el):
+                    M[s] = np.roll(M[s], -s)  # untwist
+
+                frames.append(M[:, keep].reshape(-1))
+                t_abs.append(dt_from_ms(tAbs_ms))
 
                 skip = pl - (4*IQN + EOFF)
                 if skip > 0:
                     f.seek(skip, 1)
 
-            if not iq_cols:
-                raise RuntimeError(f"File {filepath} has insufficient data points.")
+            if not frames:
+                raise RuntimeError("No EIT frames found")
 
-            iq = np.stack(iq_cols, axis=1)
-            vi = np.stack(vi_cols, axis=1)
-            pos = np.stack(pos_cols, axis=1) if pos_cols else np.zeros((POSN, iq.shape[1]), dtype=np.int32)
+            vv = np.stack(frames, axis=0)
+            # vv = np.roll(vv, 16, axis=0) # optionally move index electrode
 
-            vv = amp * (iq[0::2].astype(np.float64) + 1j * iq[1::2].astype(np.float64))
-            elecImps = vi[0::2].astype(np.float64) + 1j * vi[1::2].astype(np.float64)
-
-            return vv, tabs, trel, elecImps, pos, evts, {"format_version": fmtver, "header_size": hdrsz}
+            t_sec = np.array(t_rel_us, dtype=np.float64) * 1e-6
+            return vv, t_sec, t_abs
 
     except FileNotFoundError:
-        raise RuntimeError(f"File {filepath} not found, returning empty EITData Object.")
+        raise RuntimeError(f"File {filepath} not found.")

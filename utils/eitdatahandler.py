@@ -15,7 +15,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # for data manipulation
-import math
 import numpy as np
 # for file handling
 from draeger import load_bin
@@ -92,29 +91,50 @@ class EITDataHandler():
                 return 0
 
     def load_raw_input_file(self, filename, append=False):
+        def detect_eit_format(path):
+            with open(path, "rb") as f:
+                b80 = f.read(80)
+            if b"---Draeger EIT-Software" in b80:
+                return "draeger-eit"
+
+            d4 = b80[:4]
+            if len(d4) < 4:
+                return "unknown"
+
+            if d4[0:3] == b"\x00\x00\x00" and d4[3] in (2, 3, 4):
+                return "lq4pre" if d4[3] == 4 else f"lq{d4[3]}"
+            if d4 == b"\x04\x00\x00\x00":
+                return "lq4"
+            if d4 == b"\x05\x00\x00\x00":
+                return "lq5"
+            return "unknown"
         if filename.suffix == ".eit":
             try:
-                model = draeger_eit(filename)
-                data_raw = model.load()
-                if append:
-                    self.data_raw = np.concatenate((self.data_raw, data_raw))
-                else:
-                    self.data_raw = data_raw
-                self.timestamps = np.arange(0, self.data_raw.shape[0])*1./model.info['framerate'] # these are not real measured timestamps but evenly spaced points in time
-                return model.info['framerate']
-            except:
-                try:
-                    data_raw, timestamps, _, _ = load_eit(filename)
-                    sampling_frequency = len(data_raw) / (timestamps[-1] - timestamps[0]).total_seconds()
+                format_str = detect_eit_format(filename)
+                if format_str == "draeger-eit":
+                    model = draeger_eit(filename)
+                    data_raw = model.load()
                     if append:
                         self.data_raw = np.concatenate((self.data_raw, data_raw))
                     else:
                         self.data_raw = data_raw
-                    self.timestamps = np.arange(0, self.data.shape[0])*1./sampling_frequency # these are not real measured timestamps but evenly spaced points in time
+
+                    self.timestamps = np.arange(0, self.data_raw.shape[0])*1./model.info['framerate'] # these are not real measured timestamps but evenly spaced points in time
+                    return model.info['framerate']
+                elif format_str[:2] == "lq":
+                    data_raw, trel, _ = load_eit(filename)
+                    sampling_frequency = 1.0 / np.median(np.diff(np.array(trel)))
+                    if append:
+                        self.data_raw = np.concatenate((self.data_raw, data_raw))
+                    else:
+                        self.data_raw = data_raw
+                    self.timestamps = np.arange(0, self.data_raw.shape[0])*1./sampling_frequency # these are not real measured timestamps but evenly spaced points in time
                     return sampling_frequency
-                except Exception as e:
-                    self.error_handler.handle_exception(e)
-                    return 0
+                else:
+                    raise Exception("Unknown file format")
+            except Exception as e:
+                self.error_handler.handle_exception(e)
+                return 0
         elif filename.suffix == ".npz":
             try:
                 with np.load(filename) as f:
@@ -141,6 +161,7 @@ class EITDataHandler():
         if reconstruction_algorithm == "GREIT":
             reconstruction_settings['greit_p'] = kwargs.get('greit_p', 0.5)
             reconstruction_settings['greit_lambda'] = kwargs.get('greit_lambda', 0.01)
+            reconstruction_settings['greit_normalize'] = kwargs.get('greit_normalize', False)
             reference_timestamp = kwargs.get('reconstruction_reference', 0)
             reconstruction_settings['reference_index'] = self.timestamp2index(reference_timestamp)
             if reference_timestamp == 0: # if reference is set to 0, take index of frame with median voltage sum
@@ -158,21 +179,31 @@ class EITDataHandler():
         """
         base_conductivity = 1 # hardcoded
         # setup mesh (with thorax shape), protocol
-        n_el = 1 + math.sqrt(1 + vx[1])
+        if vx.shape[1] == 208:
+            # Dräger Pulmovista
+            n_el = 16
+            pair_distance = 1
+        elif vx.shape[1] == 928:
+            # Sentec BB2
+            n_el = 32
+            pair_distance = 5
+        else:
+            n_el = None
+            pair_distance = None
+            self.error_handler.handle_exception(RuntimeError(f"Unknown raw data structure with length {vx.shape[1]}."))
         mesh_obj = mesh.create(n_el, h0=0.1, fd=thorax)
-        protocol_obj = protocol.create(n_el, dist_exc=1, step_meas=1, parser_meas="std") # TODO: verify settings for sentec *.eit
+        protocol_obj = protocol.create(n_el, dist_exc=pair_distance, step_meas=pair_distance, parser_meas="rotate_meas")
         # setup solver
         if reconstruction_algorithm == "GREIT":
             v0 = vx[kwargs.get('reference_index', 0)]
-            eit = greit.GREIT(mesh_obj, protocol_obj) # default grid size 32*32
+            eit = greit.GREIT(mesh_obj, protocol_obj)
             eit.setup(p=kwargs['greit_p'], lamb=kwargs['greit_lambda'], perm=1, jac_normalized=True)
         else:
             self.error_handler.handle_exception(RuntimeError(f"Solver {reconstruction_algorithm} not found."))
             return None
-
         conductivityList = []
         for i in range(len(vx)):
-            ds = eit.solve(vx[i], v0, normalize=True)
+            ds = eit.solve(vx[i], v0, normalize=kwargs.get('greit_normalize', False))
             _, _, ds = eit.mask_value(ds, mask_value=np.nan)
             conductivityList.append(np.real(ds))
         impedance = 1/(np.asarray(conductivityList)+base_conductivity)
