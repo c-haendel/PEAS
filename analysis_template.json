@@ -58,7 +58,7 @@
             "export": true
         },
         {
-            "name": "rb_fFOI_cumulative_pixels",
+            "name": "rb_fROI_cumulative_pixels",
             "title": "number of pixels assigned to cumulative functional region of interest (regular breathing)",
             "unit": "pixels",
             "prerequisites": [
@@ -136,7 +136,7 @@
             "export": true
         },
         {
-            "name": "fvc_fFOI_cumulative_pixels",
+            "name": "fvc_fROI_cumulative_pixels",
             "title": "number of pixels assigned to cumulative functional region of interest (forced vital capacity manoeuvre)",
             "unit": "pixels",
             "prerequisites": [
@@ -8788,14 +8788,14 @@
             "export": true
         },
         {
-            "name": "fvc_pre_expired_fraction",
+            "name": "fvc_back_extrapolated_fraction",
             "title": "quality indicator for breath detection: fraction of already expired volume at defined start of expiration (forced vital capacity manoeuvre)",
             "prerequisites": [
                 {
                     "base_item": "detector_data",
                     "interval": "fvc",
                     "parameters": {
-                        "attr_name": "pre_expired_fraction"
+                        "attr_name": "back_extrapolated_fraction"
                     }
                 }
             ],

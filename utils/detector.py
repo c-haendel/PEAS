@@ -116,7 +116,7 @@ Perform cubic spline interpolation for the signal and resample according to slid
                 'dtype': float,
                 'unit': 's',
             },
-            'pre_expired_fraction': {
+            'back_extrapolated_fraction': {
                 'value': 0,
                 'dtype': float,
                 'unit': '',
@@ -187,7 +187,7 @@ Perform cubic spline interpolation for the signal and resample according to slid
         value_at_intersection = resampled_data[nearest_idx_to_intersection]
 
         # Calculate the fraction dropped at intersection_time
-        self.set_setting('pre_expired_fraction', (value_at_intersection - max_val) / (min_val - max_val))
+        self.set_setting('back_extrapolated_fraction', (value_at_intersection - max_val) / (min_val - max_val))
 
         return flags
 
