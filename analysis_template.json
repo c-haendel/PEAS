@@ -249,6 +249,7 @@
         {
             "name": "rb_tidal_image_cov_vd",
             "title": "ventro-dorsal centroid of tidal image (regular breathing)",
+            "comment": "including negative pixels",
             "prerequisites": [
                 {
                     "name": "rb_tidal_image"
@@ -270,6 +271,7 @@
         {
             "name": "rb_tidal_image_cov_vd_strip",
             "title": "ventro-dorsal centroid of tidal image (regular breathing)",
+            "comment": "including negative pixels",
             "prerequisites": [
                 {
                     "name": "rb_tidal_image"
@@ -294,6 +296,7 @@
         {
             "name": "rb_tidal_image_cov_rl",
             "title": "right-left centroid of tidal image (regular breathing)",
+            "comment": "including negative pixels",
             "prerequisites": [
                 {
                     "name": "rb_tidal_image"
@@ -1755,6 +1758,7 @@
         {
             "name": "db_tidal_image_cov_vd",
             "title": "ventro-dorsal centroid of tidal image (deep breathing)",
+            "comment": "including negative pixels",
             "prerequisites": [
                 {
                     "name": "db_tidal_image"
@@ -1776,6 +1780,7 @@
         {
             "name": "db_tidal_image_cov_vd_strip",
             "title": "ventro-dorsal centroid of tidal image (deep breathing)",
+            "comment": "including negative pixels",
             "prerequisites": [
                 {
                     "name": "db_tidal_image"
@@ -1800,6 +1805,7 @@
         {
             "name": "db_tidal_image_cov_rl",
             "title": "right-left centroid of tidal image (deep breathing)",
+            "comment": "including negative pixels",
             "prerequisites": [
                 {
                     "name": "db_tidal_image"
@@ -3259,6 +3265,7 @@
         {
             "name": "vc_tidal_image_cov_vd",
             "title": "ventro-dorsal centroid of tidal image (vital capacity manoeuvre)",
+            "comment": "including negative pixels",
             "prerequisites": [
                 {
                     "name": "vc_tidal_image"
@@ -3280,6 +3287,7 @@
         {
             "name": "vc_tidal_image_cov_vd_strip",
             "title": "ventro-dorsal centroid of tidal image (vital capacity manoeuvre)",
+            "comment": "including negative pixels",
             "prerequisites": [
                 {
                     "name": "vc_tidal_image"
@@ -3304,6 +3312,7 @@
         {
             "name": "vc_tidal_image_cov_rl",
             "title": "right-left centroid of tidal image (vital capacity manoeuvre)",
+            "comment": "including negative pixels",
             "prerequisites": [
                 {
                     "name": "vc_tidal_image"
@@ -3420,6 +3429,7 @@
         {
             "name": "fvc_tidal_image_cov_vd",
             "title": "ventro-dorsal centroid of tidal image (forced vital capacity manoeuvre)",
+            "comment": "including negative pixels",
             "prerequisites": [
                 {
                     "name": "fvc_tidal_image"
@@ -3441,6 +3451,7 @@
         {
             "name": "fvc_tidal_image_cov_vd_strip",
             "title": "ventro-dorsal centroid of tidal image (forced vital capacity manoeuvre)",
+            "comment": "including negative pixels",
             "prerequisites": [
                 {
                     "name": "fvc_tidal_image"
@@ -3465,6 +3476,7 @@
         {
             "name": "fvc_tidal_image_cov_rl",
             "title": "right-left centroid of tidal image (forced vital capacity manoeuvre)",
+            "comment": "including negative pixels",
             "prerequisites": [
                 {
                     "name": "fvc_tidal_image"
