@@ -577,6 +577,47 @@ class PassthroughItem(BaseItem):
         np_array, _ = data
         return np_array
 
+class ROIItem(BaseItem):
+    def __init__(self, name, **kwargs):
+        super().__init__(name, **kwargs)
+
+    def generate(self, data, interval):
+        mask = np.array([[
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0],
+            [0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0],
+            [0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],
+            [0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0],
+            [0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
+            [0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
+            [0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+            [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+            [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+            [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+            [0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+            [0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
+            [0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        ]], dtype=bool)
+        return mask
+
 AVAILABLE_BASE_ITEMS = {
     "tidal_image": TidalImageItem,
     "expiratory_tidal_image": lambda name, **kwargs: TidalImageItem(name, inspiration=False, **kwargs),
@@ -597,7 +638,8 @@ AVAILABLE_BASE_ITEMS = {
     "breath_times": BreathTimesItem,
     "interval_data": lambda name, attr_name: IntervalDataItem(name, attr_name),
     "detector_data": lambda name, attr_name: DetectorDataItem(name, attr_name),
-    "passthrough": PassthroughItem
+    "passthrough": PassthroughItem,
+    "thorax_roi": ROIItem
 }
 
 
@@ -666,7 +708,7 @@ def percentile_operation(input_data, percentile_value):
 
 def cumulative_threshold(input_data, threshold):
     if input_data.ndim != 3 or input_data.shape[0] != 1:
-        raise ValueError("Input data must be a 3D array with the first dimension of length 1.")
+        raise ValueError("Input data must be a 3D array (time, space, space) with the first dimension of length 1.")
 
     flattened = input_data.reshape(-1)
     flattened = np.nan_to_num(flattened, nan=0)
@@ -682,25 +724,34 @@ def cumulative_threshold(input_data, threshold):
 
     return output_mask.reshape(input_data.shape)
 
-def coefficient_of_variation(input_data):
-    result = np.nanstd(input_data) / np.abs(np.nanmean(input_data))
+def coefficient_of_variation(input_data, **kwargs):
+    if input_data.ndim != 3:
+        raise ValueError("Input data must be a 3D array (time, space, space).")
+
+    axes = kwargs.get("axis", tuple(range(1, input_data.ndim))) # default: apply frame-wise
+    result = np.nanstd(input_data, axis=axes) / np.abs(np.nanmean(input_data, axis=axes))
     return result[np.newaxis, ...] if result.ndim == 0 else result
 
-def global_inhomogeneity_index(input_data):
-    if input_data.ndim != 3 or input_data.shape[0] != 1:
-        raise ValueError("Input data must be a 3D array with the first dimension of length 1 for the global inhomogeneity index calculation.")
+def global_inhomogeneity_index(input_data, **kwargs):
+    if input_data.ndim != 3:
+        raise ValueError("Input data must be a 3D array (time, space, space).")
 
-    total_abs_weight = np.abs(np.nansum(input_data))
-    median_di = np.nanmedian(input_data)
+    axes = kwargs.get("axis", tuple(range(1, input_data.ndim))) # default: apply frame-wise
+    total_weight = np.nansum(input_data, axis=axes, keepdims=True)
+    median_di = np.nanmedian(input_data, axis=axes, keepdims=True)
     abs_diff = np.abs(input_data - median_di)
-    sum_abs_diff = np.nansum(abs_diff)
-    gi = (sum_abs_diff / total_abs_weight) if total_abs_weight != 0 else 0
-
-    return np.array([[[gi]]])
+    sum_abs_diff = np.nansum(abs_diff, axis=axes, keepdims=True)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        gi = np.where(
+            total_weight != 0,
+            sum_abs_diff / total_weight,
+            0
+        )
+    return gi
 
 def apply_mask(np_array, bool_mask):
     if np_array.shape[1:] != bool_mask.shape[1:]:
-        raise ValueError("Dimensions of np_array and bool_mask do not match.")
+        raise ValueError(f"Dimensions of np_array ({np_array.shape}) and bool_mask ({bool_mask.shape}) do not match.")
 
     expanded_mask = bool_mask == False
     expanded_mask = np.broadcast_to(expanded_mask, np_array.shape)
@@ -711,33 +762,68 @@ def apply_mask(np_array, bool_mask):
 
 def normalize_sum(input_data):
     if input_data.ndim != 3 or input_data.shape[0] != 1:
-        raise ValueError("Input data must be a 3D array with the first dimension of length 1.")
+        raise ValueError("Input data must be a 3D array (time, space, space) with the first dimension of length 1.")
     total_sum = np.nansum(input_data)
     result = input_data / total_sum if total_sum != 0 else input_data
     return result[..., np.newaxis] if result.ndim == 2 else result
 
 def normalize_max(input_data):
     if input_data.ndim != 3 or input_data.shape[0] != 1:
-        raise ValueError("Input data must be a 3D array with the first dimension of length 1.")
+        raise ValueError("Input data must be a 3D array (time, space, space) with the first dimension of length 1.")
     max_value = np.nanmax(input_data)
     result = input_data / max_value if max_value != 0 else input_data
     return result[..., np.newaxis] if result.ndim == 2 else result
 
-def centroid(input_data):
-    if input_data.ndim != 3 or input_data.shape[0] != 1:
-        raise ValueError("Input data must be a 3D array with the first dimension of length 1 for the centroid calculation.")
+def centroid(input_data, strip=False):
+    if input_data.ndim != 3:
+        raise ValueError("Input data must be a 3D array (time, space, space).")
 
-    data_slice = input_data[0]
-    total_weight = np.nansum(data_slice)
-    if total_weight == 0:
-        return np.zeros((1, 1, 1, 2))
-    y_coords, x_coords = np.meshgrid(np.arange(data_slice.shape[0]), np.arange(data_slice.shape[1]), indexing='ij')
-    x_center = np.nansum(x_coords * data_slice) / total_weight
-    y_center = np.nansum(y_coords * data_slice) / total_weight
-    x_fraction = x_center / (data_slice.shape[1] - 1)
-    y_fraction = y_center / (data_slice.shape[0] - 1)
+    t, h, w = input_data.shape
+    out = np.zeros((t, 1, 1, 2), dtype=float)
 
-    return np.array([[[[y_fraction, x_fraction]]]])
+    if strip:
+        row_valid = ~np.all(np.isnan(input_data), axis=(0, 2))
+        col_valid = ~np.all(np.isnan(input_data), axis=(0, 1))
+
+        if not row_valid.any() or not col_valid.any():
+            return out
+
+        r0, r1 = np.where(row_valid)[0][[0, -1]]
+        c0, c1 = np.where(col_valid)[0][[0, -1]]
+
+        data = input_data[:, r0:r1 + 1, c0:c1 + 1]
+    else:
+        data = input_data
+        r0, c0 = 0, 0
+
+    fh, fw = data.shape[1:]
+    axes = (1, 2)
+
+    total_weight = np.nansum(data, axis=axes, keepdims=True)
+
+    y_coords, x_coords = np.meshgrid(
+        np.arange(fh, dtype=float),
+        np.arange(fw, dtype=float),
+        indexing="ij"
+    )
+
+    y_center = np.nansum(data * y_coords[None, :, :], axis=axes, keepdims=True) / total_weight
+    x_center = np.nansum(data * x_coords[None, :, :], axis=axes, keepdims=True) / total_weight
+
+    y_center += r0
+    x_center += c0
+
+    denom_y = (h - 1) if h > 1 else np.nan
+    denom_x = (w - 1) if w > 1 else np.nan
+
+    y_fraction = y_center / denom_y
+    x_fraction = x_center / denom_x
+
+    with np.errstate(divide="ignore", invalid="ignore"):
+        out = np.stack([y_fraction, x_fraction], axis=-1)
+        out = np.where(total_weight[..., None] != 0, out, 0)
+
+    return out
 
 def slice_last_operation(input_data, index):
     """ use index to slice last dimension of data
@@ -842,11 +928,11 @@ AVAILABLE_OPERATIONS =  {
     "cumulative_threshold": lambda threshold: Operation("cumulative_threshold", cumulative_threshold, threshold=threshold),
     "sum": lambda **kwargs: Operation("sum", np.nansum, **kwargs),
     "std": lambda **kwargs: Operation("std", np.nanstd, **kwargs),
-    "coefficient_of_variation": lambda: Operation("coefficient_of_variation", coefficient_of_variation),
-    "global_inhomogeneity_index": lambda: Operation("global_inhomogeneity_index", global_inhomogeneity_index),
+    "coefficient_of_variation": lambda **kwargs: Operation("coefficient_of_variation", coefficient_of_variation, **kwargs),
+    "global_inhomogeneity_index": lambda **kwargs: Operation("global_inhomogeneity_index", global_inhomogeneity_index, **kwargs),
     "normalize_sum": lambda: Operation("normalize_sum", normalize_sum),
     "normalize_max": lambda: Operation("normalize_max", normalize_max),
-    "centroid": lambda: Operation("centroid", centroid),
+    "centroid": lambda **kwargs: Operation("centroid", centroid, **kwargs),
     "multiply": lambda: Operation("multiply", np.multiply),
     "divide": lambda: Operation("divide", np.divide),
     "subtract": lambda: Operation("subtract", np.subtract),

@@ -268,6 +268,30 @@
             "export": true
         },
         {
+            "name": "rb_tidal_image_cov_vd_strip",
+            "title": "ventro-dorsal centroid of tidal image (regular breathing)",
+            "prerequisites": [
+                {
+                    "name": "rb_tidal_image"
+                }
+            ],
+            "operations": [
+                {
+                    "name": "centroid",
+                    "parameters": {
+                        "strip": true
+                    }
+                },
+                {
+                    "name": "slice_last",
+                    "parameters": {
+                        "index": 0
+                    }
+                }
+            ],
+            "export": true
+        },
+        {
             "name": "rb_tidal_image_cov_rl",
             "title": "right-left centroid of tidal image (regular breathing)",
             "prerequisites": [
@@ -1739,6 +1763,30 @@
             "operations": [
                 {
                     "name": "centroid"
+                },
+                {
+                    "name": "slice_last",
+                    "parameters": {
+                        "index": 0
+                    }
+                }
+            ],
+            "export": true
+        },
+        {
+            "name": "db_tidal_image_cov_vd_strip",
+            "title": "ventro-dorsal centroid of tidal image (deep breathing)",
+            "prerequisites": [
+                {
+                    "name": "db_tidal_image"
+                }
+            ],
+            "operations": [
+                {
+                    "name": "centroid",
+                    "parameters": {
+                        "strip": true
+                    }
                 },
                 {
                     "name": "slice_last",
@@ -3230,6 +3278,30 @@
             "export": true
         },
         {
+            "name": "vc_tidal_image_cov_vd_strip",
+            "title": "ventro-dorsal centroid of tidal image (vital capacity manoeuvre)",
+            "prerequisites": [
+                {
+                    "name": "vc_tidal_image"
+                }
+            ],
+            "operations": [
+                {
+                    "name": "centroid",
+                    "parameters": {
+                        "strip": true
+                    }
+                },
+                {
+                    "name": "slice_last",
+                    "parameters": {
+                        "index": 0
+                    }
+                }
+            ],
+            "export": true
+        },
+        {
             "name": "vc_tidal_image_cov_rl",
             "title": "right-left centroid of tidal image (vital capacity manoeuvre)",
             "prerequisites": [
@@ -3356,6 +3428,30 @@
             "operations": [
                 {
                     "name": "centroid"
+                },
+                {
+                    "name": "slice_last",
+                    "parameters": {
+                        "index": 0
+                    }
+                }
+            ],
+            "export": true
+        },
+        {
+            "name": "fvc_tidal_image_cov_vd_strip",
+            "title": "ventro-dorsal centroid of tidal image (forced vital capacity manoeuvre)",
+            "prerequisites": [
+                {
+                    "name": "fvc_tidal_image"
+                }
+            ],
+            "operations": [
+                {
+                    "name": "centroid",
+                    "parameters": {
+                        "strip": true
+                    }
                 },
                 {
                     "name": "slice_last",
