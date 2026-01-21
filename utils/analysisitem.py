@@ -778,7 +778,7 @@ def centroid(input_data, strip=False):
     if input_data.ndim != 3:
         raise ValueError("Input data must be a 3D array (time, space, space).")
 
-    t, h, w = input_data.shape
+    t, _, _ = input_data.shape
     out = np.zeros((t, 1, 1, 2), dtype=float)
 
     if strip:
@@ -794,7 +794,8 @@ def centroid(input_data, strip=False):
         data = input_data[:, r0:r1 + 1, c0:c1 + 1]
     else:
         data = input_data
-        r0, c0 = 0, 0
+
+    print(str(strip) + str(data.shape))
 
     fh, fw = data.shape[1:]
     axes = (1, 2)
@@ -810,11 +811,10 @@ def centroid(input_data, strip=False):
     y_center = np.nansum(data * y_coords[None, :, :], axis=axes, keepdims=True) / total_weight
     x_center = np.nansum(data * x_coords[None, :, :], axis=axes, keepdims=True) / total_weight
 
-    y_center += r0
-    x_center += c0
+    print(y_center, x_center)
 
-    denom_y = (h - 1) if h > 1 else np.nan
-    denom_x = (w - 1) if w > 1 else np.nan
+    denom_y = (fh - 1) if fh > 1 else np.nan
+    denom_x = (fw - 1) if fw > 1 else np.nan
 
     y_fraction = y_center / denom_y
     x_fraction = x_center / denom_x
