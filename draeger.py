@@ -4,6 +4,12 @@ import numpy as np
 #import warnings
 
 def load_bin(filepath, fs_target=None, max_channels_medibus=3, clamp_max_value=1e5, header_only=False):
+    def mask_zero_variance(data):
+        var = np.var(data, axis=0)
+        zero_var_mask = var == 0
+        masked = data.astype(float, copy=True)
+        masked[:, zero_var_mask] = np.nan
+        return masked
     try:
         with open(str(filepath), "rb") as f:
             measurements = os.path.getsize(str(filepath)) // 4358
@@ -59,7 +65,7 @@ def load_bin(filepath, fs_target=None, max_channels_medibus=3, clamp_max_value=1
                 pixel=pixel[idxs]
                 medibus=medibus[idxs]
                 fs_bin = fs_target
-        return pixel.astype(np.float32), medibus.astype(np.float32), timestamp[0], fs_bin
+        return mask_zero_variance(pixel.astype(np.float32)), medibus.astype(np.float32), timestamp[0], fs_bin
     except(FileNotFoundError):
         raise RuntimeError("File "+str(filepath)+" not found.")
 
