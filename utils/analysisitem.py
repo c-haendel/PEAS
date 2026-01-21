@@ -774,47 +774,28 @@ def normalize_max(input_data):
     result = input_data / max_value if max_value != 0 else input_data
     return result[..., np.newaxis] if result.ndim == 2 else result
 
-def centroid(input_data, strip=False):
+def centroid(input_data):
     if input_data.ndim != 3:
         raise ValueError("Input data must be a 3D array (time, space, space).")
 
-    t, _, _ = input_data.shape
+    t, h, w = input_data.shape
     out = np.zeros((t, 1, 1, 2), dtype=float)
 
-    if strip:
-        row_valid = ~np.all(np.isnan(input_data), axis=(0, 2))
-        col_valid = ~np.all(np.isnan(input_data), axis=(0, 1))
-
-        if not row_valid.any() or not col_valid.any():
-            return out
-
-        r0, r1 = np.where(row_valid)[0][[0, -1]]
-        c0, c1 = np.where(col_valid)[0][[0, -1]]
-
-        data = input_data[:, r0:r1 + 1, c0:c1 + 1]
-    else:
-        data = input_data
-
-    print(str(strip) + str(data.shape))
-
-    fh, fw = data.shape[1:]
     axes = (1, 2)
 
-    total_weight = np.nansum(data, axis=axes, keepdims=True)
+    total_weight = np.nansum(input_data, axis=axes, keepdims=True)
 
     y_coords, x_coords = np.meshgrid(
-        np.arange(fh, dtype=float),
-        np.arange(fw, dtype=float),
+        np.arange(h, dtype=float),
+        np.arange(w, dtype=float),
         indexing="ij"
     )
 
-    y_center = np.nansum(data * y_coords[None, :, :], axis=axes, keepdims=True) / total_weight
-    x_center = np.nansum(data * x_coords[None, :, :], axis=axes, keepdims=True) / total_weight
+    y_center = np.nansum(input_data * y_coords[None, :, :], axis=axes, keepdims=True) / total_weight
+    x_center = np.nansum(input_data * x_coords[None, :, :], axis=axes, keepdims=True) / total_weight
 
-    print(y_center, x_center)
-
-    denom_y = (fh - 1) if fh > 1 else np.nan
-    denom_x = (fw - 1) if fw > 1 else np.nan
+    denom_y = (h - 1) if h > 1 else np.nan
+    denom_x = (w - 1) if w > 1 else np.nan
 
     y_fraction = y_center / denom_y
     x_fraction = x_center / denom_x
@@ -932,7 +913,7 @@ AVAILABLE_OPERATIONS =  {
     "global_inhomogeneity_index": lambda **kwargs: Operation("global_inhomogeneity_index", global_inhomogeneity_index, **kwargs),
     "normalize_sum": lambda: Operation("normalize_sum", normalize_sum),
     "normalize_max": lambda: Operation("normalize_max", normalize_max),
-    "centroid": lambda **kwargs: Operation("centroid", centroid, **kwargs),
+    "centroid": lambda: Operation("centroid", centroid),
     "multiply": lambda: Operation("multiply", np.multiply),
     "divide": lambda: Operation("divide", np.divide),
     "subtract": lambda: Operation("subtract", np.subtract),
@@ -1009,14 +990,29 @@ def resample_discrete(interval, input_data, n, m):
     return resampled_arr, time_list
 
 def filter_butterworth(interval, input_data, cutoff, filter_order):
-        np_array, time_list = input_data
+    np_array, time_list = input_data
 
-        fs = 1 / np.mean(np.diff(time_list))
+    fs = 1 / np.mean(np.diff(time_list))
 
-        sos = butter(filter_order, cutoff, fs=fs, output='sos')
-        filtered_data = sosfiltfilt(sos, np_array, axis=0)
+    sos = butter(filter_order, cutoff, fs=fs, output='sos')
+    filtered_data = sosfiltfilt(sos, np_array, axis=0)
 
-        return filtered_data, time_list
+    return filtered_data, time_list
+
+
+def strip_all_nan(interval, input_data):
+    np_array, time_list = input_data
+
+    row_valid = ~np.all(np.isnan(np_array), axis=(0, 2))
+    col_valid = ~np.all(np.isnan(np_array), axis=(0, 1))
+
+    if not row_valid.any() or not col_valid.any():
+        return np.full((len(time_list), 1, 1), np.nan), time_list
+
+    r0, r1 = np.where(row_valid)[0][[0, -1]]
+    c0, c1 = np.where(col_valid)[0][[0, -1]]
+
+    return np_array[:, r0:r1 + 1, c0:c1 + 1], time_list
 
 def breath_averaging(interval, input_data, center_inspiration, max_lag):
     def mean_shifted_copies(np_array, indices):
@@ -1071,7 +1067,8 @@ def breath_averaging(interval, input_data, center_inspiration, max_lag):
 
 AVAILABLE_PREPROCESSORS = {
         "resample_over_image": lambda vd, rl: Preprocessor("resample_over_image", resample_discrete, n=vd, m=rl),
-        "low_pass_filter": lambda cutoff, filter_order: Preprocessor("low_pass_filter", filter_butterworth, cutoff=cutoff, filter_order=filter_order)
+        "low_pass_filter": lambda cutoff, filter_order: Preprocessor("low_pass_filter", filter_butterworth, cutoff=cutoff, filter_order=filter_order),
+        "strip_all_nan": lambda: Preprocessor("strip_all_nan", strip_all_nan)
 }
 
 class AnalysisItem():

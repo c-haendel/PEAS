@@ -381,12 +381,13 @@ class GUI(QtWidgets.QMainWindow):
                 self.set_voltage_mode(False)
                 self.calculation_thread.enqueue_task("reconstruct", self.settings_handler.get_param_dict(self.settings_handler.param_recursive("reconstruction_algorithm")))
             elif "export_results" in path:
-                # TODO: check if reconstructed data exists
-                self.settings_handler.write_state_file()
-                self.export_interval_plots()
-                self.lock_gui()
-                self.settings_handler.export_analysis_json()
-                self.calculation_thread.enqueue_task("analyze", None)
+                # TODO: grey out export button in voltage mode
+                if not self.voltage_mode:
+                    self.settings_handler.write_state_file()
+                    self.export_interval_plots()
+                    self.lock_gui()
+                    self.settings_handler.export_analysis_json()
+                    self.calculation_thread.enqueue_task("analyze", None)
             elif "analysis_template" in path:
                 self.setup_with_analysis_template()
             elif "edit_analyses" in path:

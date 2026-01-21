@@ -270,19 +270,25 @@
         },
         {
             "name": "rb_tidal_image_cov_vd_strip",
-            "title": "ventro-dorsal centroid of tidal image (regular breathing)",
+            "title": "ventro-dorsal centroid of tidal image, stripped (regular breathing)",
             "comment": "including negative pixels",
             "prerequisites": [
                 {
-                    "name": "rb_tidal_image"
+                    "base_item": "tidal_image",
+                    "interval": "rb",
+                    "preprocessors": [
+                        {
+                            "name": "strip_all_nan"
+                        }
+                    ]
                 }
             ],
             "operations": [
                 {
-                    "name": "centroid",
-                    "parameters": {
-                        "strip": true
-                    }
+                    "name": "mean_over_time"
+                },
+                {
+                    "name": "centroid"
                 },
                 {
                     "name": "slice_last",
@@ -1783,15 +1789,21 @@
             "comment": "including negative pixels",
             "prerequisites": [
                 {
-                    "name": "db_tidal_image"
+                    "base_item": "tidal_image",
+                    "interval": "db",
+                    "preprocessors": [
+                        {
+                            "name": "strip_all_nan"
+                        }
+                    ]
                 }
             ],
             "operations": [
                 {
-                    "name": "centroid",
-                    "parameters": {
-                        "strip": true
-                    }
+                    "name": "mean_over_time"
+                },
+                {
+                    "name": "centroid"
                 },
                 {
                     "name": "slice_last",
@@ -3290,15 +3302,21 @@
             "comment": "including negative pixels",
             "prerequisites": [
                 {
-                    "name": "vc_tidal_image"
+                    "base_item": "tidal_image",
+                    "interval": "vc",
+                    "preprocessors": [
+                        {
+                            "name": "strip_all_nan"
+                        }
+                    ]
                 }
             ],
             "operations": [
                 {
-                    "name": "centroid",
-                    "parameters": {
-                        "strip": true
-                    }
+                    "name": "mean_over_time"
+                },
+                {
+                    "name": "centroid"
                 },
                 {
                     "name": "slice_last",
@@ -3454,15 +3472,21 @@
             "comment": "including negative pixels",
             "prerequisites": [
                 {
-                    "name": "fvc_tidal_image"
+                    "base_item": "tidal_image",
+                    "interval": "fvc",
+                    "preprocessors": [
+                        {
+                            "name": "strip_all_nan"
+                        }
+                    ]
                 }
             ],
             "operations": [
                 {
-                    "name": "centroid",
-                    "parameters": {
-                        "strip": true
-                    }
+                    "name": "mean_over_time"
+                },
+                {
+                    "name": "centroid"
                 },
                 {
                     "name": "slice_last",
