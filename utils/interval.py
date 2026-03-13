@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from utils.detector import Detector, AVAILABLE_DETECTORS
+from utils.detector import Detector, DETECTORS
 from utils.analysisutils import Flag
 
 class Interval():
@@ -51,7 +51,7 @@ class Interval():
             'name': f"{self.name}_detector",
             'title': 'detector',
             'type': 'list',
-            'limits': list(AVAILABLE_DETECTORS.keys()),
+            'limits': list(DETECTORS.keys()),
             'value': self.detector.name,
             'expanded': False,
             'children': []

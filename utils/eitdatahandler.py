@@ -16,6 +16,7 @@
 
 # for data manipulation
 import numpy as np
+from pathlib import Path
 # for file handling
 from draeger import load_bin
 from sentec import load_zri, load_eit
@@ -26,14 +27,41 @@ from pyeit.mesh.shape import thorax
 import pyeit.eit.greit as greit
 from pyeit.io.daeger_eit import DAEGER_EIT as draeger_eit
 
-AVAILABLE_RECONSTRUCTION_ALGORITHMS = {
-        "GREIT": greit
-        }
-
 class EITDataHandler():
+    RECONSTRUCTION_ALGORITHMS = {
+            "GREIT": greit
+            }
+    RECONSTRUCTED_FORMATS = {
+        "Draeger reconstructed": ".bin",
+        "Sentec reconstructed": ".zri",
+        "numpy": ".npz",
+    }
+    RAW_FORMATS = {
+        "Draeger/Sentec raw": '.eit',
+        "numpy": '.npz',
+    }
+
     def __init__(self, error_handler):
         self.error_handler = error_handler
         self.wipe_data()
+
+    def _detect_raw_from_contents(self, path: Path) -> bool:
+        import numpy as np
+        # TODO: replace magic numbers with a more robust detection method
+        # 208/928 are the known raw frame sizes for Draeger/Sentec respectively
+        with np.load(path) as f:
+            return f['data'].shape[1] in (208, 928)
+
+    def is_raw_file(self, path: Path) -> bool:
+        suffix = path.suffix.lower()
+        in_raw = suffix in self.RAW_FORMATS.values()
+        in_reconstructed = suffix in self.RECONSTRUCTED_FORMATS.values()
+
+        if in_raw and not in_reconstructed:
+            return True
+        if in_reconstructed and not in_raw:
+            return False
+        return self._detect_raw_from_contents(path)
 
     def timestamp2index(self, timestamp):
         """ return first index after timestamp
@@ -48,6 +76,7 @@ class EITDataHandler():
         self.timestamps = []
 
     def load_reconstructed_input_file(self, filename, append=False):
+        # TODO: use RECONSTRUCTED_FORMATS
         if filename.suffix == ".bin":
             try:
                 data, _, _, sampling_frequency = load_bin(filename, max_channels_medibus=0)
@@ -91,6 +120,7 @@ class EITDataHandler():
                 return 0
 
     def load_raw_input_file(self, filename, append=False):
+        # TODO: use RAW_FORMATS
         def detect_eit_format(path):
             with open(path, "rb") as f:
                 b80 = f.read(80)

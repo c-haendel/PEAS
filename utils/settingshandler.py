@@ -24,17 +24,22 @@ from utils.interval import Interval
 from utils.errorhandler import CriticalError
 from utils.globalsettings import GlobalSettings
 
+from utils.eitdatahandler import EITDataHandler
+
 class SettingsHandler():
     def __init__(self, error_handler):
 
         self.error_handler = error_handler
 
+        reconstructed_formats_str = ";;".join(f"{name} (*{ext})" for name, ext in EITDataHandler.RECONSTRUCTED_FORMATS.items())
+        raw_formats_str = ";;".join(f"{name} (*{ext})" for name, ext in EITDataHandler.RAW_FORMATS.items())
+
         # build base parameter
         self.parameter_base_dict = [
             {'name': 'input', 'title': 'input', 'type': 'group', 'children': [
-                {'name': 'raw_filename', 'title': 'filename raw', 'type': 'file', 'nameFilter': 'Draeger/Sentec raw (*.eit);;numpy (*.npz)'},
+                {'name': 'raw_filename', 'title': 'filename raw', 'type': 'file', 'nameFilter': raw_formats_str},
                 {'name': 'reconstruction', 'title': 'reconstruction', 'type': 'group', 'children': [
-                    {'name': 'reconstruction_algorithm', 'title': 'reconstruction algorithm', 'type': 'list', 'limits': ['GREIT'], 'expanded': False, 'children': [
+                    {'name': 'reconstruction_algorithm', 'title': 'reconstruction algorithm', 'type': 'list', 'limits': ['GREIT'], 'value': 'GREIT', 'expanded': False, 'children': [
                         {'name': 'reconstruction_reference', 'title': 'reconstruction reference', 'type': 'float', 'value': 0, 'suffix': 's'},
                         {'name': 'greit_p', 'title': 'GREIT p', 'type': 'float', 'value': 0.5},
                         {'name': 'greit_lambda', 'title': 'GREIT lambda', 'type': 'float', 'value': 0.01},
@@ -42,7 +47,7 @@ class SettingsHandler():
                     ]},
                     {'name': 'reconstruct', 'title': 'reconstruct', 'type': 'action'}
                 ]},
-                {'name': 'reconstructed_filename', 'title': 'filename reconstructed', 'type': 'file', 'nameFilter': 'Draeger reconstructed (*.bin);;Sentec reconstructed (*.zri);;numpy (*.npz)'},
+                {'name': 'reconstructed_filename', 'title': 'filename reconstructed', 'type': 'file', 'nameFilter': reconstructed_formats_str},
                 {'name': 'source_frequency', 'title': 'sampling frequency', 'type': 'float', 'suffix': 'Hz'},
                 {'name': 'analysis', 'title': 'analysis', 'type': 'group', 'children': [
                     {'name': 'analysis_template', 'title': 'analysis template', 'type': 'file', 'nameFilter': 'analysis template (*.json)', 'value': GlobalSettings.ANALYSIS_ITEMS_FILE},

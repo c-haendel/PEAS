@@ -57,8 +57,8 @@ class Detector():
 
     @staticmethod
     def initialize_detector(detector_name, settings_handler, **kwargs):
-        if detector_name in AVAILABLE_DETECTORS:
-            detector_class = AVAILABLE_DETECTORS[detector_name]
+        if detector_name in DETECTORS:
+            detector_class = DETECTORS[detector_name]
             return detector_class(settings_handler, detector_name, detector_class.DETECTOR_TYPE, **kwargs)
         else:
             raise ValueError(f"Invalid detector name: {detector_name}")
@@ -392,7 +392,7 @@ class LowPassDetector(Detector):
 
         return flags
 
-AVAILABLE_DETECTORS = {
+DETECTORS = {
         #"reverse_cooldown": ReverseCooldownDetector,
         "low_pass": LowPassDetector,
         "min_max_min": MinMaxMinDetector,

@@ -105,8 +105,8 @@ class BaseItem():
 
     @staticmethod
     def initialize_base_item(base_item_name, **kwargs):
-        if base_item_name in AVAILABLE_BASE_ITEMS:
-            base_item_class = AVAILABLE_BASE_ITEMS[base_item_name]
+        if base_item_name in BASE_ITEMS:
+            base_item_class = BASE_ITEMS[base_item_name]
             return base_item_class(base_item_name, **kwargs)
         else:
             raise ValueError(f"Invalid base item name: {base_item_name}")
@@ -618,7 +618,7 @@ class ROIItem(BaseItem):
         ]], dtype=bool)
         return mask
 
-AVAILABLE_BASE_ITEMS = {
+BASE_ITEMS = {
     "tidal_image": TidalImageItem,
     "expiratory_tidal_image": lambda name, **kwargs: TidalImageItem(name, inspiration=False, **kwargs),
     "expired_volume": RespiredTimeItem,
@@ -659,8 +659,8 @@ class Operation():
 
     @staticmethod
     def initialize_operation(operation_name, **kwargs):
-        if operation_name in AVAILABLE_OPERATIONS:
-            operation_class = AVAILABLE_OPERATIONS[operation_name]
+        if operation_name in OPERATIONS:
+            operation_class = OPERATIONS[operation_name]
             return operation_class(**kwargs)
         else:
             raise ValueError(f"Invalid operation name: {operation_name}")
@@ -897,7 +897,7 @@ def costa_approach_operation(input_array):
 
     return np.stack((before_max, after_max), axis=-1)
 
-AVAILABLE_OPERATIONS =  {
+OPERATIONS =  {
     "mean_over_time": lambda: Operation("mean_over_time", mean_over_time),
     "median_over_time": lambda: Operation("median_over_time", median_over_time),
     "mean_over_image": lambda: Operation("mean_over_image", mean_over_image),
@@ -941,8 +941,8 @@ class Preprocessor():
 
     @staticmethod
     def initialize_preprocessor(preprocessor_name, **kwargs):
-        if preprocessor_name in AVAILABLE_PREPROCESSORS:
-            preprocessor_class = AVAILABLE_PREPROCESSORS[preprocessor_name]
+        if preprocessor_name in PREPROCESSORS:
+            preprocessor_class = PREPROCESSORS[preprocessor_name]
             return preprocessor_class(**kwargs)
         else:
             raise ValueError(f"Invalid preprocessor name: {preprocessor_name}")
@@ -1065,7 +1065,7 @@ def breath_averaging(interval, input_data, center_inspiration, max_lag):
     mean_signal = mean_shifted_copies(np_array, lags)
     return mean_signal
 
-AVAILABLE_PREPROCESSORS = {
+PREPROCESSORS = {
         "resample_over_image": lambda vd, rl: Preprocessor("resample_over_image", resample_discrete, n=vd, m=rl),
         "low_pass_filter": lambda cutoff, filter_order: Preprocessor("low_pass_filter", filter_butterworth, cutoff=cutoff, filter_order=filter_order),
         "strip_all_nan": lambda: Preprocessor("strip_all_nan", strip_all_nan)
