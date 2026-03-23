@@ -1259,7 +1259,7 @@ class Exporter:
 
     def wipe_exports(self):
         self.export_queue = []
-        self.export_queue.append(("peas_version", "", "", "", "", 0.22))
+        self.export_queue.append(("peas_version", "", "", "", "", 0.23))
 
     def add_to_export(self, item):
         self.export_queue.append((item.name, item.title, item.unit, item.identifier, item.comment, np.squeeze(item.result)))
