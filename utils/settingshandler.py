@@ -27,7 +27,7 @@ from utils.globalsettings import GlobalSettings
 from utils.eitdatahandler import EITDataHandler
 
 class SettingsHandler():
-    def __init__(self, error_handler):
+    def __init__(self, error_handler, template_path=None):
 
         self.error_handler = error_handler
 
@@ -62,6 +62,9 @@ class SettingsHandler():
         ]
         self.json_data = {}
         self.parameter = Parameter.create(name='params', type='group', children=self.parameter_base_dict)
+
+        if template_path:
+            self.set_value("analysis_template", template_path)
 
         self.read_analysis_template()
         self.create_intervals_from_json_data()

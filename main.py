@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
     error_handler = ErrorHandler()
     data_handler = EITDataHandler(error_handler)
-    settings_handler = SettingsHandler(error_handler)
+    settings_handler = SettingsHandler(error_handler, template_path=args.template)
     analysis_item_manager = AnalysisItemManager(data_handler, settings_handler, error_handler)
 
     if args.run:
@@ -59,11 +59,6 @@ if __name__ == '__main__':
             settings_handler.set_value("output_path", file_path.with_suffix(""))
             settings_handler.set_append_state(2 if is_raw else 1)
             settings_handler.read_state_file()
-
-            if args.template:
-                settings_handler.set_value("analysis_template", args.template)
-                settings_handler.read_analysis_template()
-                settings_handler.create_intervals_from_json_data()
 
             def on_load_done(_):
                 calculation_thread.calculation_complete.disconnect(on_load_done)
