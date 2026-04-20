@@ -188,6 +188,8 @@ class EITDataHandler():
         reconstruction_algorithm = kwargs.get('reconstruction_algorithm', None)
         reconstruction_settings = {}
 
+        source_frequency = kwargs.get('source_frequency', None)
+
         if reconstruction_algorithm == "GREIT":
             reconstruction_settings['greit_p'] = kwargs.get('greit_p', 0.5)
             reconstruction_settings['greit_lambda'] = kwargs.get('greit_lambda', 0.01)
@@ -199,15 +201,34 @@ class EITDataHandler():
                 reconstruction_settings['reference_index'] = sorted_indices[len(sorted_indices)//2]
                 # take minimum instead?
                 #refIndex = np.argmin(np.sum(self.data_raw, axis=1))
-        else:
-            raise RuntimeError(f"Unknown reconstruction algorithm {reconstruction_algorithm}")
 
-        self.data = self.reconstruct_multi_frame(self.data_raw, reconstruction_algorithm, **reconstruction_settings)
+        lowpass_enabled = kwargs.get('lowpass_enabled', False)
+        lowpass_cutoff = kwargs.get('lowpass_cutoff', 8.0)
+        lowpass_filter_order = kwargs.get('lowpass_filter_order', 4)
+
+        self.data = self.reconstruct_multi_frame(
+            self.data_raw, reconstruction_algorithm,
+            source_frequency=source_frequency,
+            lowpass_enabled=lowpass_enabled,
+            lowpass_cutoff=lowpass_cutoff,
+            lowpass_filter_order=lowpass_filter_order,
+            **reconstruction_settings
+        )
 
     def reconstruct_multi_frame(self, vx, reconstruction_algorithm, **kwargs):
         """ Reconstruct all images from passed raw data.
         """
+        from scipy.signal import butter, sosfiltfilt
+
         base_conductivity = 1 # hardcoded
+        source_frequency = kwargs.get('source_frequency', None)
+        lowpass_enabled = kwargs.get('lowpass_enabled', False)
+        lowpass_cutoff = kwargs.get('lowpass_cutoff', 8.0)
+        lowpass_filter_order = kwargs.get('lowpass_filter_order', 4)
+
+        if lowpass_enabled and source_frequency is not None and source_frequency > 0:
+            vx = self._apply_lowpass_filter(vx, source_frequency, lowpass_cutoff, lowpass_filter_order)
+
         # setup mesh (with thorax shape), protocol
         if vx.shape[1] == 208:
             # Dräger Pulmovista
@@ -263,3 +284,26 @@ class EITDataHandler():
                 return None, None
             plotData = np.nansum(self.data, axis=(1,2))
         return plotData, self.timestamps
+
+    def _apply_lowpass_filter(self, vx, source_frequency, cutoff, filter_order):
+        from scipy.signal import butter, sosfiltfilt
+
+        try:
+            sos = butter(filter_order, cutoff, btype='low', fs=source_frequency, output='sos')
+        except (TypeError, ValueError):
+            try:
+                sos = butter(filter_order, cutoff/(source_frequency/2), btype='low')
+            except Exception:
+                return vx
+        if vx.ndim < 2:
+            try:
+                return sosfiltfilt(sos, vx)
+            except ValueError:
+                return vx
+        result = np.zeros_like(vx)
+        for i in range(vx.shape[1]):
+            try:
+                result[:, i] = sosfiltfilt(sos, vx[:, i])
+            except ValueError:
+                result[:, i] = vx[:, i]
+        return result

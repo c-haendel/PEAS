@@ -44,6 +44,9 @@ class SettingsHandler():
                         {'name': 'greit_p', 'title': 'GREIT p', 'type': 'float', 'value': 0.5},
                         {'name': 'greit_lambda', 'title': 'GREIT lambda', 'type': 'float', 'value': 0.01},
                         {'name': 'greit_normalize', 'title': 'GREIT normalization', 'type': 'bool', 'value': False},
+                        {'name': 'lowpass_enabled', 'title': 'apply lowpass filter', 'type': 'bool', 'value': False},
+                        {'name': 'lowpass_cutoff', 'title': 'lowpass cutoff', 'type': 'float', 'value': 8.0, 'suffix': 'Hz'},
+                        {'name': 'lowpass_filter_order', 'title': 'lowpass filter order', 'type': 'int', 'value': 4},
                     ]},
                     {'name': 'reconstruct', 'title': 'reconstruct', 'type': 'action'}
                 ]},

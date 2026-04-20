@@ -379,7 +379,11 @@ class GUI(QtWidgets.QMainWindow):
             elif "reconstruct" in path:
                 self.lock_gui()
                 self.set_voltage_mode(False)
-                self.calculation_thread.enqueue_task("reconstruct", self.settings_handler.get_param_dict(self.settings_handler.param_recursive("reconstruction_algorithm")))
+                recon_params = self.settings_handler.get_param_dict(
+                    self.settings_handler.param_recursive("reconstruction_algorithm")
+                )
+                recon_params["source_frequency"] = self.settings_handler.get_value("source_frequency")
+                self.calculation_thread.enqueue_task("reconstruct", recon_params)
             elif "export_results" in path:
                 # TODO: grey out export button in voltage mode
                 if not self.voltage_mode:
