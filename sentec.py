@@ -132,6 +132,12 @@ def load_eit(filepath):
                 for s in range(n_el):
                     M[s] = np.roll(M[s], -s)  # untwist
 
+                # Zero out invalid measurements per Sentec spec: distance <= 2 from current injection
+                m_idx = np.arange(n_el)
+                dist1 = np.minimum(m_idx, n_el - m_idx)  # distance to current electrode s
+                dist2 = np.minimum(np.abs(m_idx - 5), n_el - np.abs(m_idx - 5))  # distance to electrode s+5
+                M[:, np.minimum(dist1, dist2) <= 2] = 0.0
+
                 frames.append(M[:, keep].reshape(-1))
                 t_abs.append(dt_from_ms(tAbs_ms))
 
