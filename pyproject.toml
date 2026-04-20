@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "peas"
+version = "0.1.0"
+description = "Parametric EIT Analysis Software - Software to analyze measurements with electrical impedance tomography"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+authors = [
+    {name = "Claas Händel"}
+]
+requires-python = ">=3.8"
+dependencies = [
+    "pyqtgraph",
+    "PyQt5",
+    "numpy",
+    "scipy",
+    "pyeit"
+]
+
+[project.scripts]
+peas = "main:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest"
+]

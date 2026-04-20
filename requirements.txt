@@ -1,5 +1,0 @@
-pyqtgraph
-pyQt5
-numpy
-scipy
-pyeit
