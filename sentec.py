@@ -127,7 +127,7 @@ def load_eit(filepath):
                 if vv_c.size != n_el*n_el:
                     raise RuntimeError(f"Expected {n_el*n_el} values, got {vv_c.size}")
 
-                M = np.abs(vv_c.reshape(n_el, n_el))  # (stim, meas)
+                M = np.real(vv_c.reshape(n_el, n_el))  # (stim, meas)
 
                 for s in range(n_el):
                     M[s] = np.roll(M[s], -s)  # untwist
