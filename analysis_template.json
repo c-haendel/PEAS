@@ -3355,7 +3355,7 @@
             "unit": "a.u.",
             "prerequisites": [
                 {
-                    "base_item": "tidal_image",
+                    "base_item": "expiratory_tidal_image",
                     "interval": "fvc"
                 }
             ],
@@ -8451,7 +8451,7 @@
             "unit": "a.u.",
             "prerequisites": [
                 {
-                    "base_item": "tidal_image",
+                    "base_item": "expiratory_tidal_image",
                     "preprocessors": [
                         {
                             "name": "resample_over_image",

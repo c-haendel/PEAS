@@ -187,7 +187,7 @@ Calculates tidal images for all detected breaths.
 
 **Algorithm:**
 * `tidal_image`: End-inspiration impedance minus preceding end-expiration impedance
-* `expiratory_tidal_image`: Same as tidal_image (alternative name)
+* `expiratory_tidal_image`: End-inspiration impedance minus following end-expiration impedance
 
 **Parameters:** None
 
