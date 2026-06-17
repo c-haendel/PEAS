@@ -239,6 +239,7 @@ class GUI(QtWidgets.QMainWindow):
         self.detailPlot.show()
         self.overviewPlot.show()
         self.setEnabled(True)
+        QtCore.QTimer.singleShot(0, self._reset_view)
         for key, value in result.items():
             self.settings_handler.set_value(key, value)
 
@@ -323,9 +324,15 @@ class GUI(QtWidgets.QMainWindow):
     def set_bounds_on_load(self):
         plotData = self.data_handler.timestamps
         self.overviewIntervalRegion.setBounds((0, plotData[-1]))
-        # TODO error on next line
-        # self.detailIntervalRegion.setBounds((0,plotData[-1]))
         self.update_plots()
+        self.detailIntervalRegion.hide()
+        self.overviewIntervalRegion.hide()
+        self.hide_all_flags()
+
+    def _reset_view(self):
+        self.detailPlotWidget.autoRange()
+        rgn = self.detailPlotWidget.plotItem.vb.viewRange()[0]
+        self.region.setRegion(rgn)
 
     # for menu changes
     def setup_with_analysis_template(self):

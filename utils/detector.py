@@ -116,6 +116,11 @@ Perform cubic spline interpolation for the signal and resample according to slid
                 'dtype': float,
                 'unit': 's',
             },
+            'skip_n_max_flow': {
+                'value': kwargs.get('skip_n_max_flow', 0),
+                'dtype': int,
+                'unit': '',
+            },
             'back_extrapolated_fraction': {
                 'value': 0,
                 'dtype': float,
@@ -167,8 +172,10 @@ Perform cubic spline interpolation for the signal and resample according to slid
 
         slopes = np.gradient(resampled_data, resampled_time_array)
 
-        # Find the point of lowest slope (steepest drop)
-        lowest_slope_idx = np.argmin(slopes)
+        # Find the point of lowest slope (steepest drop), skipping the first n
+        skip_n = self.get_setting('skip_n_max_flow')
+        sorted_slope_indices = np.argsort(slopes)
+        lowest_slope_idx = sorted_slope_indices[skip_n]
         lowest_slope_time = (lowest_slope_idx / resampled_sampling_rate)
         lowest_slope_time = resampled_time_array[lowest_slope_idx]
         lowest_slope_value = resampled_data[lowest_slope_idx]
