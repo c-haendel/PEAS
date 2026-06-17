@@ -60,6 +60,7 @@ class SettingsHandler():
             {'name': 'intervals', 'title': 'intervals', 'type': 'group', 'children': []},
             {'name': 'output', 'type': 'group', 'children': [
                 {'name': 'output_path', 'title': 'output path', 'type': 'file', 'fileMode': 'Directory', 'options': 'ShowDirsOnly'},
+                {'name': 'save_analysis_state', 'title': 'save analysis state', 'type': 'action'},
                 {'name': 'export_results', 'title': 'export results', 'type': 'action'},
             ]},
         ]

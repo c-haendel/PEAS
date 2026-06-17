@@ -384,13 +384,14 @@ class GUI(QtWidgets.QMainWindow):
                 )
                 recon_params["source_frequency"] = self.settings_handler.get_value("source_frequency")
                 self.calculation_thread.enqueue_task("reconstruct", recon_params)
+            elif "save_analysis_state" in path:
+                self._save_analysis_state()
             elif "export_results" in path:
                 # TODO: grey out export button in voltage mode
                 if not self.voltage_mode:
-                    self.settings_handler.write_state_file()
+                    self._save_analysis_state()
                     self.export_interval_plots()
                     self.lock_gui()
-                    self.settings_handler.export_analysis_json()
                     self.calculation_thread.enqueue_task("analyze", None)
             elif "analysis_template" in path:
                 self.setup_with_analysis_template()
@@ -527,6 +528,10 @@ class GUI(QtWidgets.QMainWindow):
             for flag in interval.flags:
                 if flag.plot_item is not None:
                     flag.plot_item.hide()
+
+    def _save_analysis_state(self):
+        self.settings_handler.write_state_file()
+        self.settings_handler.export_analysis_json()
 
     def export_interval_plots(self):
         def export_interval_plot(interval):
