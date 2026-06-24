@@ -170,6 +170,64 @@ This example creates a cumulative functional region of interest containing 90% o
 }
 ```
 
+## Available Building Blocks
+
+PEAS provides modular building blocks that can be combined in JSON templates to create custom analysis pipelines.
+
+### Detectors
+
+| Name | Type | Description |
+|------|------|-------------|
+| `low_pass` | breath | Butterworth low-pass filter with peak detection |
+| `min_max_min` | maneuver | Global minimum-maximum-minimum detection |
+| `simple_peak_flow` | maneuver | Peak flow tangent method for forced expiration |
+
+### Preprocessors
+
+| Name | Description |
+|------|-------------|
+| `resample_over_image` | Change spatial resolution (vd, rl) |
+| `low_pass_filter` | Butterworth bidirectional low-pass filter |
+| `strip_all_nan` | Remove all-NaN rows and columns |
+
+### Base Items
+
+| Name | Description |
+|------|-------------|
+| `tidal_image`, `expiratory_tidal_image` | Tidal impedance change per breath |
+| `expired_volume`, `inspired_volume` | Volume change at time t after EOI/EOE |
+| `time_to_expire`, `time_to_inspire` | Time to reach fraction of tidal volume |
+| `flow_when_expired`, `flow_when_inspired` | Flow at fraction of tidal volume |
+| `peak_expiratory_flow`, `peak_expiratory_flow_time` | Maximum expiratory flow and its timing |
+| `mean_expiratory_flow` | Mean flow between two fractions |
+| `expiratory_concavity` | Flow-volume loop concavity measure |
+| `expiratory_time_constant` | Exponential decay time constant (τ) |
+| `custom_fit` | User-defined regression function |
+| `end_expiratory_lung_impedance`, `end_inspiratory_lung_impedance` | Absolute impedance at EOE/EOI |
+| `breath_times` | Inspiration, expiration, and total cycle times |
+| `thorax_roi` | Predefined thorax region mask |
+| `interval_data`, `detector_data` | Access interval/detector attributes |
+| `passthrough` | Output raw data unchanged |
+
+### Operations
+
+| Name | Description |
+|------|-------------|
+| `mean_over_time`, `median_over_time` | Aggregate over time dimension |
+| `mean_over_image`, `median_over_image`, `sum_over_image`, `percentile_over_image` | Aggregate over spatial dimensions |
+| `threshold`, `percentile`, `cumulative_threshold` | Binary thresholding |
+| `sum`, `std`, `min`, `max`, `minimum`, `maximum` | Statistical operations |
+| `coefficient_of_variation`, `global_inhomogeneity_index` | Distribution statistics |
+| `normalize_sum`, `normalize_max` | Normalize to sum=1 or max=1 |
+| `centroid` | Center of mass (vd, rl fractions) |
+| `add`, `subtract`, `multiply`, `divide` | Element-wise arithmetic |
+| `slice_first`, `slice_last` | Index into first/last dimension |
+| `stack`, `size` | Concatenate arrays, count elements |
+| `apply_mask` | Apply boolean mask (NaN outside) |
+| `costa_approach` | PEEP titration collapse/overdistension |
+
+For complete documentation including parameters, algorithms, and output formats, see [TECHNICAL.md](TECHNICAL.md).
+
 ## File Formats
 
 ### Input Formats
