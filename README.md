@@ -8,6 +8,12 @@
 
 PEAS is a PyQt5-based GUI application for analyzing electrical impedance tomography (EIT) recordings. It provides a modular, configurable framework for research protocols with automatic breath/maneuver detection, EIT reconstruction, and customizable analysis pipelines.
 
+## Screenshot
+
+<p align="center">
+  <img src="screenshot-main.png" alt="PEAS GUI Screenshot" width="800"/>
+</p>
+
 ## Key Features
 
 * Analyze electrical impedance tomography (EIT) recordings
@@ -245,6 +251,13 @@ For complete documentation including parameters, algorithms, and output formats,
 ## Technical Reference
 
 For detailed technical documentation including all detectors, base items, operations, and preprocessors, see [TECHNICAL.md](TECHNICAL.md).
+
+## Citation
+
+If you use PEAS in your research, please cite:
+
+> Händel, C. (2025). PEAS - Parametric EIT Analysis Software. *Physiological Measurement*.
+> https://doi.org/10.1088/1361-6579/ae4cef
 
 ## License
 
