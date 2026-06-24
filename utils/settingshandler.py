@@ -40,18 +40,18 @@ class SettingsHandler():
                 {'name': 'raw_filename', 'title': 'filename raw', 'type': 'file', 'nameFilter': raw_formats_str},
                 {'name': 'reconstruction', 'title': 'reconstruction', 'type': 'group', 'children': [
                     {'name': 'reconstruction_algorithm', 'title': 'reconstruction algorithm', 'type': 'list', 'limits': ['GREIT'], 'value': 'GREIT', 'expanded': False, 'children': [
-                        {'name': 'reconstruction_reference', 'title': 'reconstruction reference', 'type': 'float', 'value': 0, 'suffix': 's'},
-                        {'name': 'greit_p', 'title': 'GREIT p', 'type': 'float', 'value': 0.5},
-                        {'name': 'greit_lambda', 'title': 'GREIT lambda', 'type': 'float', 'value': 0.01},
+                        {'name': 'reconstruction_reference', 'title': 'reconstruction reference', 'type': 'float', 'value': 0, 'suffix': 's', 'bounds': [0, None]},
+                        {'name': 'greit_p', 'title': 'GREIT p', 'type': 'float', 'value': 0.5, 'bounds': [0, 1], 'step': 0.01},
+                        {'name': 'greit_lambda', 'title': 'GREIT lambda', 'type': 'float', 'value': 0.01, 'bounds': [0, None], 'step': 0.001},
                         {'name': 'greit_normalize', 'title': 'GREIT normalization', 'type': 'bool', 'value': False},
                         {'name': 'lowpass_enabled', 'title': 'apply lowpass filter', 'type': 'bool', 'value': False},
-                        {'name': 'lowpass_cutoff', 'title': 'lowpass cutoff', 'type': 'float', 'value': 8.0, 'suffix': 'Hz'},
-                        {'name': 'lowpass_filter_order', 'title': 'lowpass filter order', 'type': 'int', 'value': 4},
+                        {'name': 'lowpass_cutoff', 'title': 'lowpass cutoff', 'type': 'float', 'value': 8.0, 'suffix': 'Hz', 'bounds': [0.01, None], 'step': 0.5},
+                        {'name': 'lowpass_filter_order', 'title': 'lowpass filter order', 'type': 'int', 'value': 4, 'bounds': [1, 20], 'step': 1},
                     ]},
                     {'name': 'reconstruct', 'title': 'reconstruct', 'type': 'action'}
                 ]},
                 {'name': 'reconstructed_filename', 'title': 'filename reconstructed', 'type': 'file', 'nameFilter': reconstructed_formats_str},
-                {'name': 'source_frequency', 'title': 'sampling frequency', 'type': 'float', 'suffix': 'Hz'},
+                {'name': 'source_frequency', 'title': 'sampling frequency', 'type': 'float', 'suffix': 'Hz', 'bounds': [0, None]},
                 {'name': 'analysis', 'title': 'analysis', 'type': 'group', 'children': [
                     {'name': 'analysis_template', 'title': 'analysis template', 'type': 'file', 'nameFilter': 'analysis template (*.json)', 'value': GlobalSettings.ANALYSIS_ITEMS_FILE},
                     {'name': 'edit_analyses', 'title': 'edit analyses', 'type': 'action'},
@@ -217,8 +217,26 @@ class SettingsHandler():
     def sync_interval_to_tree(self):
         # settings of intervals and detectors are stored in the respective objects, not the parameter tree. Manual sync after change in tree.
         for interval in self.interval_list:
-            for key, _ in interval.detector.settings.items():
-                interval.detector.settings[key]['value'] = self.get_value(f"{interval.name}_detector_{key}")
+            for key, setting in interval.detector.settings.items():
+                tree_name = f"{interval.name}_detector_{key}"
+                value = self.get_value(tree_name)
+                clamped = self._clamp_to_bounds(value, setting.get('bounds'))
+                if clamped != value:
+                    self.set_value(tree_name, clamped)
+                    value = clamped
+                interval.detector.settings[key]['value'] = value
+
+    def _clamp_to_bounds(self, value, bounds):
+        if bounds is None or value is None:
+            return value
+        if not isinstance(bounds, (list, tuple)) or len(bounds) != 2:
+            return value
+        lo, hi = bounds
+        if lo is not None and value < lo:
+            return lo
+        if hi is not None and value > hi:
+            return hi
+        return value
 
     def sync_tree_to_interval(self):
         # settings of intervals and detectors are stored in the respective objects, not the parameter tree. Manual sync after change in interval settings.

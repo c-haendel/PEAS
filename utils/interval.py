@@ -72,6 +72,10 @@ class Interval():
                 'suffix': unit,
                 'readonly': readonly,
             }
+            if 'bounds' in meta:
+                setting_dict['bounds'] = meta['bounds']
+            if 'step' in meta:
+                setting_dict['step'] = meta['step']
             detector_dict['children'].append(setting_dict)
 
         # Create the main parameter dictionary with the 'detector' dictionary as one of its children

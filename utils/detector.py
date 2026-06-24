@@ -42,7 +42,7 @@ class Detector():
             self.settings[key]['value'] = expected_type(new_value)
     def get_setting_metadata(self, key):
         if key in self.settings:
-            return {k: self.settings[key][k] for k in ('dtype', 'unit', 'readonly')}
+            return {k: self.settings[key][k] for k in ('dtype', 'unit', 'readonly', 'bounds', 'step') if k in self.settings[key]}
         return None
     def settings_to_state_dict(self):
         return {key: value['value'] for key, value in self.settings.items()}
@@ -115,11 +115,15 @@ Perform cubic spline interpolation for the signal and resample according to slid
                 'value': kwargs.get('sliding_window_size', 0.01),
                 'dtype': float,
                 'unit': 's',
+                'bounds': [0.001, None],
+                'step': 0.001,
             },
             'skip_n_max_flow': {
                 'value': kwargs.get('skip_n_max_flow', 0),
                 'dtype': int,
                 'unit': '',
+                'bounds': [0, None],
+                'step': 1,
             },
             'back_extrapolated_fraction': {
                 'value': 0,
@@ -211,6 +215,8 @@ With this list of minima and maxima, create Flag objects with vertical lines nam
                 'value': kwargs.get('cooldown', 4),
                 'dtype': float,
                 'unit': 's',
+                'bounds': [0.1, None],
+                'step': 0.5,
             },
         }
 
@@ -300,6 +306,8 @@ class ManualBreathDetector(Detector):
                 'value': kwargs.get('breaths', 3),
                 'dtype': int,
                 'unit': '',
+                'bounds': [1, None],
+                'step': 1,
             },
         }
     def detect(self, data, flags):
@@ -324,16 +332,22 @@ class LowPassDetector(Detector):
                 'value': kwargs.get('filter_order', 4),
                 'dtype': int,
                 'unit': '',
+                'bounds': [1, 20],
+                'step': 1,
             },
             'cutoff': {
                 'value': kwargs.get('cutoff', 1.0),
                 'dtype': float,
                 'unit': 'Hz',
+                'bounds': [0.01, None],
+                'step': 0.1,
             },
             'timeout': {
                 'value': kwargs.get('timeout', 2.0),
                 'dtype': float,
                 'unit': 's',
+                'bounds': [0.1, None],
+                'step': 0.5,
             }
         }
 
